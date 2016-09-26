@@ -31,7 +31,7 @@ local7.*                                        /var/log/raisecom.log
 
 Create rrd/ directory under the raisepon root tree.
 
-Default username/password admin/admin.
+Default username/password admin/admin123.
 
 Usage:
 1. You need to add at least One OLT and one pon port to be able to add customers.
