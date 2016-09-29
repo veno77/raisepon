@@ -45,7 +45,7 @@ The software is provided under the MIT License. Read below:
 
 The MIT License (MIT)
 
-Copyright (c) 2015 Ventsislav Velkov a.k.a. Veno
+Copyright (c) 2015 Ventsislav Velkov a.k.a. Veno - vtvelkov@gmail.com 
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
