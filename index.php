@@ -114,7 +114,7 @@ if ($submit == "SEARCH") {
 }
 
 try {
-	$result = $db->query("SELECT CUSTOMERS.ID, CUSTOMERS.SVR_TEMPLATE, CUSTOMERS.STATE, CUSTOMERS.NAME, CUSTOMERS.ADDRESS, LPAD(HEX(CUSTOMERS.MAC_ADDRESS), 12, '0') as MAC_ADDRESS, ONU.NAME as ONU_NAME, ONU.RF as RF, OLT.NAME as OLT_NAME, INET_NTOA(OLT.IP_ADDRESS) as IP_ADDRESS, OLT.RO as RO, OLT_MODEL.TYPE as TYPE, PON.NAME as PON_NAME, PON.PORT_ID as PORT_ID, PON.SLOT_ID as SLOT_ID, PON_ONU_ID, SVR_TEMPLATE.NAME as SVR_NAME from CUSTOMERS LEFT JOIN ONU on CUSTOMERS.ONU_MODEL=ONU.ID LEFT JOIN OLT on CUSTOMERS.OLT=OLT.ID LEFT JOIN OLT_MODEL on OLT.MODEL=OLT_MODEL.ID LEFT JOIN PON on CUSTOMERS.PON_PORT=PON.ID LEFT JOIN SVR_TEMPLATE on CUSTOMERS.SVR_TEMPLATE=SVR_TEMPLATE.ID WHERE " . $where ." order by PON_ONU_ID");
+	$result = $db->query("SELECT CUSTOMERS.ID, CUSTOMERS.SVR_TEMPLATE, CUSTOMERS.STATE, CUSTOMERS.NAME, CUSTOMERS.ADDRESS, LPAD(HEX(CUSTOMERS.MAC_ADDRESS), 12, '0') as MAC_ADDRESS, ONU.NAME as ONU_NAME, ONU.DTYPE as DTYPE, ONU.RF as RF, OLT.NAME as OLT_NAME, INET_NTOA(OLT.IP_ADDRESS) as IP_ADDRESS, OLT.RO as RO, OLT_MODEL.TYPE as TYPE, PON.NAME as PON_NAME, PON.PORT_ID as PORT_ID, PON.SLOT_ID as SLOT_ID, PON_ONU_ID, SVR_TEMPLATE.NAME as SVR_NAME from CUSTOMERS LEFT JOIN ONU on CUSTOMERS.ONU_MODEL=ONU.ID LEFT JOIN OLT on CUSTOMERS.OLT=OLT.ID LEFT JOIN OLT_MODEL on OLT.MODEL=OLT_MODEL.ID LEFT JOIN PON on CUSTOMERS.PON_PORT=PON.ID LEFT JOIN SVR_TEMPLATE on CUSTOMERS.SVR_TEMPLATE=SVR_TEMPLATE.ID WHERE " . $where ." order by PON_ONU_ID");
 } catch (PDOException $e) {
     echo "Connection Failed:" . $e->getMessage() . "\n";
 	exit;
@@ -123,7 +123,7 @@ print "<p><center>";
 if ($PON_ID)
 	print '<form name="myform3" action="update.php" method="post">';
 print "<h1>OLT: " . $OLT_NAME . "</h1><h2>PON: " . $PON_NAME . "   (" . $SLOT_ID . "/" . $PORT_ID . ")</h2><br><br>"  ;
-print "<table border=1 cellpadding=1 cellspacing=1><tr align=center style=font-weight:bold><td><input type=\"checkbox\" id=\"selectall\"></td><td>ONU</td><td>Name</td><td>Address</td><td>MODEL</td><td>RF</td><td>MAC_ADDRESS</td><td>SVR_TMPL</td><td>STT</td><td>R_PWR</td><td>STATUS</td><td>LAST ONLINE</td><td>OFFLINE REASON</td> </tr>";
+print "<table border=1 cellpadding=1 cellspacing=1><tr align=center style=font-weight:bold><td><input type=\"checkbox\" id=\"selectall\"></td><td>ONU</td><td>Name</td><td>Address</td><td>MODEL</td><td>RF</td><td>MAC_ADDRESS</td><td>SVR_TMPL</td><td>STT</td><td>R_PWR</td><td>STATUS</td><td>LAST ONLINE</td><td>OFFLINE REASON</td><td>SYNC</td></tr>";
 while ($row = $result->fetch(PDO::FETCH_ASSOC)) { 
 	if($row{'TYPE'} == '1') {
 		$big_onu_id = $row{'SLOT_ID'} * 10000000 + $row{'PORT_ID'} * 100000 + $row{'PON_ONU_ID'};
@@ -137,6 +137,8 @@ while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
 	$first_oid = "iso.3.6.1.4.1.8886.18.2.1.3.1.1.8." . $big_onu_id;
 	$third_oid = "iso.3.6.1.4.1.8886.18.2.1.3.1.1.7." . $big_onu_id;
 	$forth_oid = "iso.3.6.1.4.1.8886.18.2.1.3.1.1.17." . $big_onu_id;
+	$mac_oid = "iso.3.6.1.4.1.8886.18.2.1.3.1.1.2." . $big_onu_id;
+	$onutype_oid = "iso.3.6.1.4.1.8886.18.2.1.3.1.1.3." . $big_onu_id;
 	//GET STATUS via SNMP
  	snmp_set_valueretrieval(SNMP_VALUE_PLAIN);
 	$session = new SNMP(SNMP::VERSION_2C, $row{'IP_ADDRESS'}, $row{'RO'});
@@ -188,8 +190,8 @@ while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
 	$last_online = $year . "-". $month . "-". $day . "  " . $hour . ":" . $minute ;
 	//ONU OFFLINE REASON
  	snmp_set_valueretrieval(SNMP_VALUE_PLAIN);
-    $session = new SNMP(SNMP::VERSION_2C, $row{'IP_ADDRESS'}, $row{'RO'});
-    $offline_reason = $session->get($forth_oid);
+	$session = new SNMP(SNMP::VERSION_2C, $row{'IP_ADDRESS'}, $row{'RO'});
+	$offline_reason = $session->get($forth_oid);
     //    if ($session->getError())
     // exit(var_dump($session->getError()));
 	if ($offline_reason == '1') {
@@ -213,7 +215,24 @@ while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
 	}else{
         $state = "<img src=\"pic/off_small.png\">";
 	}
-	print "<tr id=hover align=right><td><input type=\"checkbox\" class=\"case\" name=\"check_list[]\" value=\"" . $row{'ID'} . "\"></td><td><a href=\"customers.php?edit=1&id=".$row{'ID'}."\">".$row{'PON_ONU_ID'}."</a></td><td>".$row{'NAME'}."</td><td>".$row{'ADDRESS'}."</td><td>".$row{'ONU_NAME'}."</td><td><a href=\"onu_details.php?id=" . $row{'ID'} . "\">".$rf_state."</a></td><td>" . implode(':', str_split($row{'MAC_ADDRESS'},2))."</td><td>".$row{'SVR_NAME'}."</td><td align=\"center\" style=\"vertical-align:middle\"><a href=\"onu_details.php?id=" . $row{'ID'} . "\">". $state ."</a></td><td><a href=\"graph_power.php?id=" . $row{'ID'}."\">" . $power ."</a></td><td align=\"center\" style=\"vertical-align:middle\">" . $status ."</td><td>" . $last_online ."</td><td>" . $offline_reason ."</td></tr>";
+        snmp_set_valueretrieval(SNMP_VALUE_LIBRARY);
+	$session = new SNMP(SNMP::VERSION_2C, $row{'IP_ADDRESS'}, $row{'RO'});
+	$check_mac = $session->get($mac_oid);
+	$check_mac = trim(str_replace('Hex-STRING: ', '', $check_mac));
+	$check_mac = str_replace(' ', ':', $check_mac);
+	$db_mac = implode(':', str_split($row{'MAC_ADDRESS'},2));
+
+	snmp_set_valueretrieval(SNMP_VALUE_PLAIN);
+	$session = new SNMP(SNMP::VERSION_2C, $row{'IP_ADDRESS'}, $row{'RO'});
+	$onutype = $session->get($onutype_oid);
+	$onudtype = $row{'DTYPE'};
+	if ( strcmp( $check_mac, $db_mac) == 0  &&  strcmp( $onutype, $onudtype) == 0 ){
+		$sync = "<font color=green>OK</font>" ;
+	}
+	else{
+                $sync = "<font color=red>NOT OK</font>";
+	}
+	print "<tr id=hover align=right><td><input type=\"checkbox\" class=\"case\" name=\"check_list[]\" value=\"" . $row{'ID'} . "\"></td><td><a href=\"customers.php?edit=1&id=".$row{'ID'}."\">".$row{'PON_ONU_ID'}."</a></td><td>".$row{'NAME'}."</td><td>".$row{'ADDRESS'}."</td><td>".$row{'ONU_NAME'}."</td><td><a href=\"onu_details.php?id=" . $row{'ID'} . "\">".$rf_state."</a></td><td>" . $db_mac ."</td><td>".$row{'SVR_NAME'}."</td><td align=\"center\" style=\"vertical-align:middle\"><a href=\"onu_details.php?id=" . $row{'ID'} . "\">". $state ."</a></td><td><a href=\"graph_power.php?id=" . $row{'ID'}."\">" . $power ."</a></td><td align=\"center\" style=\"vertical-align:middle\">" . $status ."</td><td>" . $last_online ."</td><td>" . $offline_reason ."</td><td>" . $sync ."</td></tr>";
 }
 
 print "</table></p>";
