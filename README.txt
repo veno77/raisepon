@@ -39,7 +39,7 @@ Usage:
 3. Clicking on different parts in index.html when you load the customers on selected OLT and PON will give you more information.
 4. You can use parse.php to parse existing ONUs on your OLTs.
 
-I am not professional programmer, so I do not pretend the code is pretty. 
+
 
 The software is provided under the MIT License. Read below:
 
