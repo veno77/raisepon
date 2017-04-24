@@ -4,7 +4,8 @@ include ("dbconnect.php");
 navigation();
 
 $nameErr = $addrErr = $egnErr = $onuErr = $oltErr = $ponErr = $macErr = $max_cpeErr = "";
-$name = $address = $egn = $svr_template = $template_id = $onu = $olt = $pon_port = $mac_address = $max_cpe = $customer_id = $old_pon_port = $old_olt = $old_pon_onu_id = $state = $old_onu_ports = "";
+$name = $address = $svr_template = $template_id = $onu = $olt = $pon_port = $mac_address  = $customer_id = $old_pon_port = $old_olt = $old_pon_onu_id = $state = $old_onu_ports = $submit = "";
+$egn = $max_cpe = "0";
 
 
 
@@ -61,14 +62,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 		$olt = test_input($_POST["olt"]);
 	}
 
-	if ($_POST["old_olt"]) {
+	if (isset($_POST["old_olt"])) {
 		$old_olt = test_input($_POST["old_olt"]);
 	}
 
-	if ($_POST["old_pon_port"]) {
+	if (isset($_POST["old_pon_port"])) {
 		$old_pon_port = test_input($_POST["old_pon_port"]);
 	}
-	if ($_POST["old_pon_onu_id"]) {
+	if (isset($_POST["old_pon_onu_id"])) {
 		$old_pon_onu_id = test_input($_POST["old_pon_onu_id"]);
 	}
 
@@ -86,7 +87,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 		exit("Mac Address Format is like AA:BB:CC:DD:EE:FF");
 	}
 
-	if ($_POST["state"]) {
+	if (isset($_POST["state"])) {
 		$state = "1";
 	}else{
 		$state = "2";
@@ -214,7 +215,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 				exit(var_dump($session->getError()));
 		}
 		
-		if ($max_cpe) {
+		if ($max_cpe != "0") {
 			$max_cpe_oid = "1.3.6.1.4.1.8886.18.2.1.4.5.1.1." . $big_onu_id;
 			$session = new SNMP(SNMP::VERSION_2C, $olt_ip_address, $olt_rw);
 			$session->set($max_cpe_oid, 'i', $max_cpe);
@@ -749,7 +750,7 @@ if($onuErr != "")
 
 ?>
 <tr><td>SVR Template:</td><td><select id="svr-template" name="svr_template">
-<option value="">---------</option>
+<option value="0">---------</option>
 <?php
 
 if ($edit == "1" || $_POST) {

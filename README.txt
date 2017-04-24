@@ -1,4 +1,4 @@
-RAISEPON 1.1
+RAISEPON 1.0
 
 Raisepon is Opensource php/mysql software written to manage Subscriber base on RAISECOM's EPON OLTs ISCOM5508, ISCOM5800,ISCOM6800. Supported are most of RAISECOM ONUs.
 Currently there is no support for RAISECOM's GPON solution.
@@ -17,7 +17,7 @@ rrdtool + pecl-rrd
 
 Copy the files to your web folder.
 Create database "raisecom" and load in it the supplied raisecom.sql file
-Grant permissions to user for databse "raisecom". Modify common.php  to match the mysql user and pass.
+Grant permissions to user for databse "raisecom". Modify common.php and update_rrd.php to match the mysql user,pass.
 
 
 Add the following to your crontab:
@@ -31,7 +31,7 @@ local7.*                                        /var/log/raisecom.log
 
 Create rrd/ directory under the raisepon root tree.
 
-Default username/password admin/admin123.
+Default username/password admin/admin.
 
 Usage:
 1. You need to add at least One OLT and one pon port to be able to add customers.
@@ -45,7 +45,7 @@ The software is provided under the MIT License. Read below:
 
 The MIT License (MIT)
 
-Copyright (c) 2015 Ventsislav Velkov a.k.a. Veno - vtvelkov@gmail.com 
+Copyright (c) 2015 Ventsislav Velkov a.k.a. Veno
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

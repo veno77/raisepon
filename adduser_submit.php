@@ -1,11 +1,15 @@
 <?php
 /*** begin our session ***/
-session_start();
 include ("common.php");
 include ("dbconnect.php");
 navigation();
 if ($user_class < "9")
 	exit();
+
+$account_id = '';
+if (isset($_POST['account_id']))
+	$account_id = $_POST['account_id'];
+
 
 
 /*** first check that both the username, password and form token have been sent ***/
@@ -46,16 +50,16 @@ elseif (ctype_alnum($_POST['password']) != true && $_POST["SUBMIT"] !== "DELETE"
         /*** if there is no match ***/
         $message = "Password must be alpha numeric";
 }
-elseif (!preg_match('/^[0-9]*$/', $_POST['account_id'])) {
+elseif (!preg_match('/^[0-9]*$/', $account_id)) {
 	$message = 'That sux';
 }
 else
 {
     /*** if we are here the data is valid and we can insert it into database ***/
-    $username = filter_var($_POST['username'], FILTER_SANITIZE_STRING);
-    $password = filter_var($_POST['password'], FILTER_SANITIZE_STRING);
+	$username = filter_var($_POST['username'], FILTER_SANITIZE_STRING);
+	$password = filter_var($_POST['password'], FILTER_SANITIZE_STRING);
 	$type = filter_var($_POST['type'], FILTER_SANITIZE_STRING);
-	$account_id = filter_var($_POST['account_id'], FILTER_SANITIZE_STRING);
+	$account_id = filter_var($account_id, FILTER_SANITIZE_STRING);
 
     /*** now we can encrypt the password ***/
     $password = sha1( $password );

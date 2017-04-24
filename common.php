@@ -1,11 +1,9 @@
 <?php
 header('Content-Type: text/html; charset=utf-8');
 print "<link rel=\"stylesheet\" type=\"text/css\" href=\"style.css\">";
-
-
+print "<script src=\"./jquery-3.1.1.min.js\"></script>";
 ?>
-<script src="./jquery-1.9.0.js"></script>
-<script>
+<script type="text/javascript" language="javascript">
 $(function() {
         $("#select-olt").change(function() {
                 $("#select-pon").load("get.php?choice=" + $("#select-olt").val());
@@ -47,11 +45,65 @@ $("tr#hover").hover(
 );
 });
 
-//  End -->
+
+var getPage;
+
+function getPage(customer_id, type) {
+	$('#output').html('<img src="pic/loading.gif" />');
+	jQuery.ajax({
+		url: "onu_info.php",
+		data: {customer_id: customer_id, type: type},
+		type: "POST",
+		success:function(data){$('#output').html(data);}
+	});
+}
+
+
+function get_graph_power(id) {
+        $('#output').html('<img src="pic/loading.gif" />');
+        jQuery.ajax({
+                url: "graph_power.php",
+                data: {id: id},
+                type: "GET",
+                success:function(data){$('#output').html(data);}
+        });
+}
+
+function get_graph_traffic(id) {
+        $('#output').html('<img src="pic/loading.gif" />');
+        jQuery.ajax({
+                url: "graph_traffic.php",
+                data: {id: id},
+                type: "GET",
+                success:function(data){$('#output').html(data);}
+        });
+}
+
+
+function get_graph_packets(customer_id, type) {
+        $('#output').html('<img src="pic/loading.gif" />');
+        jQuery.ajax({
+                url: "graph_packets.php",
+                data: {id: customer_id, type: type},
+                type: "GET",
+                success:function(data){$('#output').html(data);}
+        });
+}
+
+function graph_onu_ethernet_ports(id, port) {
+        $('#output').html('<img src="pic/loading.gif" />');
+        jQuery.ajax({
+                url: "graph_onu_ethernet_ports.php",
+                data: {id: id, port: port},
+                type: "GET",
+                success:function(data){$('#output').html(data);}
+        });
+}
+
+
 </script>
 
 <?php
-
 session_start();
 if (!isset($_SESSION["id"])) {
 header("Location: login.php");

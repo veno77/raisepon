@@ -31,7 +31,7 @@ if (!($_SERVER["REQUEST_METHOD"] == "POST")&&!($_GET)) {
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-	if ($_POST["pon_id"]) {
+	if (isset($_POST["pon_id"])) {
 		$pon_id = test_input($_POST["pon_id"]);
 	}
 
@@ -41,7 +41,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 		$olt = test_input($_POST["olt"]);
 	}
 
-	if ($_POST["olt_id"]) {
+	if (isset($_POST["olt_id"])) {
 		$olt_id = test_input($_POST["olt_id"]);
 	}
 
@@ -272,9 +272,11 @@ if (($_SERVER["REQUEST_METHOD"] == "POST")||($_GET)) {
 	print "<form action=\"pon.php\" method=\"post\">";
 	if ($olt)
 		print "<input type=\"hidden\" name=\"olt_id\" value=\"". $olt ."\">";
-	if ($pon_id)
-	print "<input type=\"hidden\" name=\"pon_id\" value=\"". $pon_id ."\">";
-	if ($_GET["edit"] == "1" || $pon_id) {
+//	if ($pon_id)
+//	print "<input type=\"hidden\" name=\"pon_id\" value=\"". $pon_id ."\">";
+//	if ($_GET["edit"] == "1" || $pon_id) {
+	if ($_GET) {
+		print "<input type=\"hidden\" name=\"pon_id\" value=\"". $pon_id ."\">";
 		print "<input type=\"hidden\" name=\"slot_id\" value=\"". $slot_id ."\">";
 		print "<input type=\"hidden\" name=\"port_id\" value=\"". $port_id ."\">";
 		print "<p><table>";

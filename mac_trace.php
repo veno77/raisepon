@@ -92,11 +92,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 				if ($port_type == '3') {
 					$onu_id = $session->get($oid_4);
 					print "<tr><td>2. Tracing PON " . $slot . "/" . $port . "</td><td>:: Found specified MAC from ONU " . $onu_id . "</td></tr>";	
+					$oid_6 = "1.3.6.1.4.1.8886.18.2.6.14.5.1.2." . $slot . str_pad($port, 2, '0', STR_PAD_LEFT) . str_pad($onu_id, 5, '0', STR_PAD_LEFT) . $mac_address;
+					$onu_port_id = $session->get($oid_6);
+					print "<tr><td>3. Tracing ONU " . $slot . "/" . $port . "/" . $onu_id . "</td><td>:: Found specified MAC on ONU_Ethernet_Port: " . $onu_port_id . "</td></tr>";	
 				}
-				
-				$oid_6 = "1.3.6.1.4.1.8886.18.2.6.14.5.1.2." . $slot . str_pad($port, 2, '0', STR_PAD_LEFT) . str_pad($onu_id, 5, '0', STR_PAD_LEFT) . $mac_address;
-				$onu_port_id = $session->get($oid_6);
-				print "<tr><td>3. Tracing ONU " . $slot . "/" . $port . "/" . $onu_id . "</td><td>:: Found specified MAC on ONU_Ethernet_Port: " . $onu_port_id . "</td></tr>";	
 
 			}
 			

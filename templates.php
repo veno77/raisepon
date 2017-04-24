@@ -186,7 +186,13 @@ if (($_SERVER["REQUEST_METHOD"] == "POST")||($_GET)) {
 	print "</table>";
 	print "<form action=\"templates.php\" method=\"post\">";
 	print "<p><table>";
-	if ($_GET["edit"] == "1") {
+	if (isset($_GET["edit"])) {
+		$edit = $_GET["edit"];
+	} else {
+		$edit = NULL;
+	}
+
+	if ($edit == "1") {
 		print "<tr><td>Template ID*:</td><td>" . $template_id . "</td>";
 		print "<input type=\"hidden\" name=\"template_id\" value=\"". $template_id ."\">";
 		print "<input type=\"hidden\" name=\"t_id\" value=\"". $t_id ."\">";
@@ -211,7 +217,13 @@ if (($_SERVER["REQUEST_METHOD"] == "POST")||($_GET)) {
 	if($portsErr != "") 
 		print "<td style=\"color:red\">" . $portsErr . "</td>";
 	print "</tr></table></p>";
-	if ($_GET["edit"] == "1" || $t_id) {
+	if (isset($_GET["edit"])) {
+        $edit = $_GET["edit"];
+	} else {
+		$edit = NULL;
+	}
+
+	if ($edit == "1" || $t_id) {
 		print "<input type='submit' name='SUBMIT' value='EDIT'>";
 		print "&nbsp;&nbsp;&nbsp;<input type='submit' name='SUBMIT' value='DELETE'>";
 	}else{

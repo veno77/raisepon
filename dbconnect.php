@@ -1,6 +1,6 @@
 <?php
-$mysql_user = "username";
-$mysql_pass = "password";
+$mysql_user = "root";
+$mysql_pass = "blahsux12321";
 try {
 	$db = new PDO('mysql:host=localhost;dbname=raisecom;charset=utf8', $mysql_user, $mysql_pass);
 	$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);

@@ -123,7 +123,7 @@ print "<p><center>";
 if ($PON_ID)
 	print '<form name="myform3" action="update.php" method="post">';
 print "<h1>OLT: " . $OLT_NAME . "</h1><h2>PON: " . $PON_NAME . "   (" . $SLOT_ID . "/" . $PORT_ID . ")</h2><br><br>"  ;
-print "<table border=1 cellpadding=1 cellspacing=1><tr align=center style=font-weight:bold><td><input type=\"checkbox\" id=\"selectall\"></td><td>ONU</td><td>Name</td><td>Address</td><td>MODEL</td><td>RF</td><td>MAC_ADDRESS</td><td>SVR_TMPL</td><td>STT</td><td>R_PWR</td><td>STATUS</td><td>LAST ONLINE</td><td>OFFLINE REASON</td><td>SYNC</td></tr>";
+print "<table border=1 cellpadding=1 cellspacing=1><tr align=center style=font-weight:bold><td><input type=\"checkbox\" id=\"	\"></td><td>ONU</td><td>Name</td><td>Address</td><td>MODEL</td><td>RF</td><td>MAC_ADDRESS</td><td>Admin STATE</td><td>RxPower</td><td>STATUS</td><td>SYNC</td></tr>";
 while ($row = $result->fetch(PDO::FETCH_ASSOC)) { 
 	if($row{'TYPE'} == '1') {
 		$big_onu_id = $row{'SLOT_ID'} * 10000000 + $row{'PORT_ID'} * 100000 + $row{'PON_ONU_ID'};
@@ -135,8 +135,6 @@ while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
 	        $second_oid = "iso.3.6.1.4.1.8886.18.2.8.1.2.1.2.5." . $big_onu_id_2;
 	}
 	$first_oid = "iso.3.6.1.4.1.8886.18.2.1.3.1.1.8." . $big_onu_id;
-	$third_oid = "iso.3.6.1.4.1.8886.18.2.1.3.1.1.7." . $big_onu_id;
-	$forth_oid = "iso.3.6.1.4.1.8886.18.2.1.3.1.1.17." . $big_onu_id;
 	$mac_oid = "iso.3.6.1.4.1.8886.18.2.1.3.1.1.2." . $big_onu_id;
 	$onutype_oid = "iso.3.6.1.4.1.8886.18.2.1.3.1.1.3." . $big_onu_id;
 	//GET STATUS via SNMP
@@ -144,10 +142,9 @@ while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
 	$session = new SNMP(SNMP::VERSION_2C, $row{'IP_ADDRESS'}, $row{'RO'});
 	$status = $session->get($first_oid);
 	$power = '';
-	$last_online = "Never";
 	$rf_state = "";
 	if ($status == '1') {
-		$status = "<a href=\"graph.php?id=" . $row{'ID'}."\"><font color=green>Online</font></a>";
+		$status = "<font color=green>Online</font>";
 		//GET POWER via SNMP
 		$power = $session->get($second_oid);
 		$power = round(10*log10($power/10000),2);
@@ -171,50 +168,13 @@ while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
 	}else{
         $status = "<font color=red>Offline</font>";
 	}
-	//LAST ONLINE
-	snmp_set_valueretrieval(SNMP_VALUE_LIBRARY);
-	$session = new SNMP(SNMP::VERSION_2C, $row{'IP_ADDRESS'}, $row{'RO'});
-	$last_online = $session->get($third_oid);
-	//	if ($session->getError())
-	//       	exit(var_dump($session->getError()));
-	$last_online = str_replace('Hex-STRING: ', '', $last_online);
-	$loa = explode(' ', $last_online);
-	$year = $loa[0] . $loa[1];
-	$year = hexdec($year);
-	$month = hexdec($loa[2]);
-	$day = hexdec($loa[3]);
-	$hour = hexdec($loa[4]);
-	$hour = str_pad($hour, 2, '0', STR_PAD_LEFT);
-	$minute = hexdec($loa[5]);
-	$minute = str_pad($minute, 2, '0', STR_PAD_LEFT);	
-	$last_online = $year . "-". $month . "-". $day . "  " . $hour . ":" . $minute ;
-	//ONU OFFLINE REASON
- 	snmp_set_valueretrieval(SNMP_VALUE_PLAIN);
-	$session = new SNMP(SNMP::VERSION_2C, $row{'IP_ADDRESS'}, $row{'RO'});
-	$offline_reason = $session->get($forth_oid);
-    //    if ($session->getError())
-    // exit(var_dump($session->getError()));
-	if ($offline_reason == '1') {
-		$offline_reason = "unknown(1)" ;
- 	} else if($offline_reason == '2') {
-		$offline_reason = "dyingGasp(2)" ;
-	} else if($offline_reason == '3') {
-		$offline_reason = "backboneFiberCut(3)" ;	
-	} else if($offline_reason == '4') {
-		$offline_reason = "branchFiberCut(4)" ;
-	} else if($offline_reason == '5') {
-		$offline_reason = "oamDisconnect(5)" ;
-	} else if($offline_reason == '6') {
-		$offline_reason = "duplicateReg(6)" ;
-	} else if ($offline_reason == '7') {
-		$offline_reason = "oltDeregOperation(7)" ;
-	}
-
+//ADMIN STATE
 	if ($row{'STATE'} == 1) {
-        $state = "<img src=\"pic/green_small.png\">";
+        $state = "<font color=green>Enabled</font>";
 	}else{
-        $state = "<img src=\"pic/off_small.png\">";
+        $state = "<font color=red>Disabled</font>";
 	}
+//SYNC CHCECK
         snmp_set_valueretrieval(SNMP_VALUE_LIBRARY);
 	$session = new SNMP(SNMP::VERSION_2C, $row{'IP_ADDRESS'}, $row{'RO'});
 	$check_mac = $session->get($mac_oid);
@@ -232,7 +192,8 @@ while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
 	else{
                 $sync = "<font color=red>NOT OK</font>";
 	}
-	print "<tr id=hover align=right><td><input type=\"checkbox\" class=\"case\" name=\"check_list[]\" value=\"" . $row{'ID'} . "\"></td><td><a href=\"customers.php?edit=1&id=".$row{'ID'}."\">".$row{'PON_ONU_ID'}."</a></td><td>".$row{'NAME'}."</td><td>".$row{'ADDRESS'}."</td><td>".$row{'ONU_NAME'}."</td><td><a href=\"onu_details.php?id=" . $row{'ID'} . "\">".$rf_state."</a></td><td>" . $db_mac ."</td><td>".$row{'SVR_NAME'}."</td><td align=\"center\" style=\"vertical-align:middle\"><a href=\"onu_details.php?id=" . $row{'ID'} . "\">". $state ."</a></td><td><a href=\"graph_power.php?id=" . $row{'ID'}."\">" . $power ."</a></td><td align=\"center\" style=\"vertical-align:middle\">" . $status ."</td><td>" . $last_online ."</td><td>" . $offline_reason ."</td><td>" . $sync ."</td></tr>";
+// PRINT TABLE
+	print "<tr id=hover align=right><td><input type=\"checkbox\" class=\"case\" name=\"check_list[]\" value=\"" . $row{'ID'} . "\"></td><td><a href=\"customers.php?edit=1&id=".$row{'ID'}."\">".$row{'PON_ONU_ID'}."</a></td><td>".$row{'NAME'}."</td><td>".$row{'ADDRESS'}."</td><td>".$row{'ONU_NAME'}."</td><td><a href=\"onu_details.php?id=" . $row{'ID'} . "\">".$rf_state."</a></td><td>" . $db_mac ."</td><td align=\"center\" style=\"vertical-align:middle\"><a href=\"onu_details.php?id=" . $row{'ID'} . "\">". $state ."</a></td><td>" . $power ."</td><td align=\"center\" style=\"vertical-align:middle\">" . $status ."</td><td>" . $sync ."</td></tr>";
 }
 
 print "</table></p>";

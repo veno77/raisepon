@@ -235,6 +235,7 @@ while($row = $result->fetch(PDO::FETCH_ASSOC)) {
 	$first_oid = "1.3.6.1.2.1.1.3.0";
 	$session = new SNMP(SNMP::VERSION_2C, $row{'IP_ADDRESS'}, $row{'RO'}, 100000, 2);
 	$status = $session->get($first_oid);
+
 	$temp = '';
 	$save = '';
 	$cpu = '';

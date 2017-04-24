@@ -52,3 +52,8 @@ font-weight: bold;
 
 form, table {margin:0px; padding:0px;}
 
+#menu{background: #D8F9D3;height: 20px;width: 800px;border-top: #F0F0F0 2px solid;}
+#menu input[type="button"]{margin-left: 2px;padding: 0px 15px;height: 20px;border: 0px;background: #F0F0F0;}
+#output{min-height:200px;width:1000px;border:#F0F0F0 1px solid;padding:15px;}
+
+

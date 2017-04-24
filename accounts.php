@@ -1,5 +1,4 @@
 <?php
-session_start();
 
 include ("common.php");
 include ("dbconnect.php");
@@ -42,32 +41,26 @@ try {
 
 if ($_GET) {
 	$account_id = $_GET['id'];
-    if (!preg_match('/^[0-9]*$/', $account_id)) {
+	if (!preg_match('/^[0-9]*$/', $account_id)) {
 		print "that sux";
 		exit;
 	} else {
 		try {
 			$result = $db->query("SELECT USERNAME, TYPE from ACCOUNTS where ID='$account_id'");
-        } catch (PDOException $e) {
+        	} catch (PDOException $e) {
 			echo "Connection Failed:" . $e->getMessage() . "\n";
 			exit;
         }
-		while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
-			$username = $row["USERNAME"];
-			$type = $row["TYPE"];
+	while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+		$username = $row["USERNAME"];
+		$type = $row["TYPE"];
 		}
 		
 		
 	}
 }
 
-
 ?>
-
-
-
-
-
 
 <form action="adduser_submit.php" method="post">
 <p>
@@ -75,7 +68,7 @@ if ($_GET) {
 <tr><td>Username:</td>
 <td>
 <?php
-if($username) {
+if(isset($username)) {
 	print "<input type=\"hidden\" name=\"username\" value=\"". $username ."\">";
 	print  $username ;
 } else {
@@ -91,7 +84,7 @@ if($username) {
 </tr></table>
 <p>
 <?php
-if ($account_id) 
+if (isset($account_id)) 
 	print "<input type=\"hidden\" name=\"account_id\" value=\"". $account_id ."\">";
 print "<select id=\"select-role\" name=\"type\">";
 print "<option value=\"\">---</option>";
@@ -116,9 +109,12 @@ print "</select>";
 <p>
 <input type="hidden" name="form_token" value="<?php echo $form_token; ?>" />
 <?php
-if (isset($_GET["edit"]))
+if (isset($_GET["edit"])) {
 	$edit = $_GET["edit"];
-if ($edit == "1" || $account_id) {
+} else {
+	$edit = NULL;
+}
+if ($edit == "1" || isset($account_id)) {
 	print "<input type='submit' name='SUBMIT' value='EDIT'>";
 	print "&nbsp;&nbsp;&nbsp;<input type='submit' name='SUBMIT' value='DELETE'>";
 }else{

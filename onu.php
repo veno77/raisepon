@@ -6,7 +6,7 @@ if ($user_class < "9")
 	exit();
 
 $nameErr = $portsErr = $dtypeErr = "";
-$name = $ports = $onu_id = $dtype = "";
+$rf = $pse = $name = $ports = $onu_id = $dtype = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 	if ($_POST["onu_id"]) {
@@ -27,14 +27,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 	if (empty($_POST["dtype"])) {
 		$dtypeErr = "Device type is required";
 	} else {
-		$dtype = test_input($_POST["dtype"]);
+		$dtype =  test_input($_POST["dtype"]);
 	}
-	if ($_POST["rf"]) {
+	if (isset($_POST["rf"])) {
 		$rf = "1";
 	}else{
 		$rf = "0";
 	}
-	if ($_POST["pse"]) {
+	if (isset($_POST["pse"])) {
 		$pse = "1";
 	}else{
 		$pse = "0";
@@ -148,7 +148,13 @@ if ($onu_id)
 
 </table></p>
 <?php
-if ($_GET["edit"] == "1" || $onu_id) {
+if (isset($_GET["edit"])) {
+        $edit = $_GET["edit"];
+} else {
+        $edit = NULL;
+}
+
+if ($edit == "1" || $onu_id) {
 	print "<input type='submit' name='SUBMIT' value='EDIT'>";
 	print "&nbsp;&nbsp;&nbsp;<input type='submit' name='SUBMIT' value='DELETE'>";
 }else{
